@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#080d1c" />
+  <title>LinkNova — Smart Link Shortener</title>
+  <meta name="description" content="Turn long links into short, shareable URLs with LinkNova." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="ambient ambient-a"></div><div class="ambient ambient-b"></div>
+  <header class="nav wrap">
+    <a class="brand" href="#"><span class="brand-mark">↗</span><span>link<span class="brand-accent">nova</span></span></a>
+    <nav class="nav-links"><a href="#features">Platform</a><a href="#solutions">Solutions</a><a href="#plans">Plans</a></nav>
+    <div class="nav-actions"><a class="signin" href="#shortener">Sign in</a><a class="btn btn-small" href="#shortener">Start free <span>↗</span></a><button class="menu-btn" id="menuBtn" aria-label="Open menu">☰</button></div>
+  </header>
+
+  <main>
+    <section class="hero wrap">
+      <div class="eyebrow"><span class="pulse"></span> SMART LINKS FOR A FASTER WEB</div>
+      <h1>Long links.<br><span class="gradient-text">Limitless possibilities.</span></h1>
+      <p class="hero-copy">Shorten, share, and understand every click. One simple link can take your ideas further.</p>
+      <div class="shortener glass" id="shortener">
+        <label class="field-label" for="longUrl">Paste your long URL</label>
+        <div class="url-row"><span class="link-icon">↗</span><input id="longUrl" type="url" placeholder="https://example.com/your/very/long/link" autocomplete="url"><button class="btn" id="shortenBtn">Shorten link <span>→</span></button></div>
+        <div class="options">
+          <label class="option"><input type="checkbox" id="qrOption"><span class="fake-check">✓</span> Generate QR code</label>
+          <span class="secure-note"><span>⌑</span> Free to try · No account needed</span>
+        </div>
+        <p id="status" class="status" role="status"></p>
+        <div id="result" class="result hidden">
+          <div class="result-main"><div><small>Your short link</small><a id="shortLink" href="#" target="_blank" rel="noopener noreferrer"></a></div><button class="copy-btn" id="copyBtn">Copy link</button></div>
+          <div id="qrWrap" class="qr-wrap hidden"><img id="qrImage" alt="QR code for your short link"><span>Scan to open your link</span></div>
+        </div>
+      </div>
+      <div class="trust-row"><span>✦ Simple by design</span><span>⌁ Share anywhere</span><span>◈ Built for creators</span></div>
+      <div class="hero-visual" aria-label="Link analytics preview">
+        <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+        <div class="floating-card mini-card"><span class="mini-icon">↗</span><div><b>Link created</b><small>Just now · Ready to share</small></div><span class="check">✓</span></div>
+        <div class="analytics-card"><div class="card-top"><div><small>LINK PERFORMANCE</small><h3>Your links, at a glance</h3></div><span class="live-pill"><i></i> LIVE PREVIEW</span></div><div class="chart"><div class="chart-grid"></div><svg viewBox="0 0 520 125" preserveAspectRatio="none" role="img" aria-label="Decorative rising analytics chart"><defs><linearGradient id="area" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#4e7bff" stop-opacity=".34"/><stop offset="100%" stop-color="#4e7bff" stop-opacity="0"/></linearGradient></defs><path d="M0 105 C35 98 45 75 80 83 S130 90 160 63 S205 82 240 52 S285 64 320 36 S365 59 395 28 S450 42 480 12 L520 20 L520 125 L0 125Z" fill="url(#area)"/><path d="M0 105 C35 98 45 75 80 83 S130 90 160 63 S205 82 240 52 S285 64 320 36 S365 59 395 28 S450 42 480 12 L520 20" fill="none" stroke="#7295ff" stroke-width="3" stroke-linecap="round"/></svg></div><div class="chart-stats"><div><small>Links created</small><b>Easy to share</b></div><div><small>QR ready</small><b>Scan & go</b></div><div><small>Works anywhere</small><b>One short URL</b></div></div></div>
+      </div>
+    </section>
+
+    <section class="stats wrap"><div><b>01</b><span>Paste a link</span></div><div><b>02</b><span>Shorten in seconds</span></div><div><b>03</b><span>Share it anywhere</span></div><div><b>04</b><span>Make it memorable</span></div></section>
+
+    <section class="section wrap" id="features"><div class="section-heading"><span class="eyebrow">BUILT FOR YOUR NEXT CLICK</span><h2>Small links. <span class="gradient-text">Big impact.</span></h2><p>Everything you need to make your links cleaner, easier to share, and more useful.</p></div>
+      <div class="feature-grid">
+        <article class="feature-card"><div class="feature-icon blue">↗</div><h3>Shorten in a flash</h3><p>Turn long, messy URLs into compact links that are easy to share anywhere.</p><span class="feature-tag">ONE-CLICK FLOW</span></article>
+        <article class="feature-card"><div class="feature-icon purple">⌗</div><h3>QR codes included</h3><p>Create a scannable QR code for posters, presentations, and real-world sharing.</p><span class="feature-tag">SCAN & SHARE</span></article>
+        <article class="feature-card"><div class="feature-icon cyan">◎</div><h3>Made for every screen</h3><p>A responsive experience that feels right on your laptop, tablet, or phone.</p><span class="feature-tag">RESPONSIVE DESIGN</span></article>
+        <article class="feature-card"><div class="feature-icon pink">◇</div><h3>Simple by default</h3><p>No clutter or complicated setup. Just paste a URL and get moving.</p><span class="feature-tag">NO-FUSS WORKFLOW</span></article>
+      </div>
+    </section>
+
+    <section class="solutions" id="solutions"><div class="wrap solution-inner"><div class="solution-copy"><span class="eyebrow">YOUR LINKS, YOUR WAY</span><h2>Give every link<br>room to <span class="gradient-text">travel.</span></h2><p>From social bios to school projects and campaigns, LinkNova helps your URLs look neat wherever you share them.</p><ul><li><span>✓</span> Clean, shareable short links</li><li><span>✓</span> Optional QR code preview</li><li><span>✓</span> Copy-ready results in seconds</li></ul><a class="btn" href="#shortener">Try it for free <span>→</span></a></div><div class="link-preview"><div class="preview-head"><span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span><span class="preview-label">LINKNOVA / PREVIEW</span></div><div class="preview-content"><div class="preview-logo">↗</div><small>YOUR NEXT SHAREABLE LINK</small><h3>One link. Less clutter.</h3><div class="fake-link"><span>linknova.example/your-link</span><span>⧉</span></div><div class="preview-footer"><span>✦ Clean and simple</span><span>↗ Ready to share</span></div></div></div></div></section>
+
+    <section class="section wrap" id="plans"><div class="section-heading"><span class="eyebrow">STRAIGHTFORWARD START</span><h2>Start simple. <span class="gradient-text">Grow from there.</span></h2><p>Use the core link-shortening experience for free. Add your own backend when you're ready for more.</p></div><div class="pricing-grid"><article class="price-card"><span class="price-label">STARTER</span><h3>Free</h3><p class="price-desc">For personal links and projects.</p><div class="price">$0 <small>/ forever</small></div><ul><li>✓ URL shortening</li><li>✓ Copy short links</li><li>✓ QR code option</li><li>✓ Mobile-friendly website</li></ul><a href="#shortener" class="btn btn-outline">Get started <span>→</span></a></article><article class="price-card featured"><span class="popular">FOR BUILDERS</span><span class="price-label">NEXT STEP</span><h3>LinkNova Plus</h3><p class="price-desc">For your own production platform.</p><div class="price">Build <small>your way</small></div><ul><li>✓ Connect a database</li><li>✓ Custom domain support</li><li>✓ Link management dashboard</li><li>✓ Analytics with a backend</li></ul><a href="#shortener" class="btn">Build your version <span>→</span></a></article></div><p class="pricing-note">Note: production features such as accounts, saved links, password gates, expiry rules, and click analytics require a backend and database.</p></section>
+
+    <section class="cta wrap"><div class="cta-glow"></div><span class="eyebrow">YOUR NEXT LINK STARTS HERE</span><h2>Ready to make it <span class="gradient-text">short?</span></h2><p>Paste a link above and give it a cleaner way to travel.</p><a href="#shortener" class="btn">Shorten a link <span>↑</span></a></section>
+  </main>
+  <footer class="footer"><div class="wrap footer-inner"><a class="brand" href="#"><span class="brand-mark">↗</span><span>link<span class="brand-accent">nova</span></span></a><p>Make every link easier to share.</p><span>© 2026 LinkNova · Independent demo project</span></div></footer>
+  <script src="script.js"></script>
+</body>
+</html>
