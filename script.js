@@ -1,4 +1,6 @@
 
+"use strict";
+
 const API_ENDPOINT =
   "https://linkpulse-api.yogeshbhatt309.workers.dev/api/shorten";
 
@@ -18,16 +20,23 @@ function setStatus(message) {
   statusBox.textContent = message;
 }
 
-function validAlias(alias) {
+function isValidAlias(alias) {
   return /^[a-zA-Z0-9_-]{1,30}$/.test(alias);
+}
+
+function resetResult() {
+  resultBox.hidden = true;
+  qrWrap.hidden = true;
+  shortLink.textContent = "";
+  shortLink.removeAttribute("href");
+  qrImage.removeAttribute("src");
 }
 
 async function shortenUrl() {
   const url = longUrlInput.value.trim();
   const alias = customAliasInput.value.trim();
 
-  resultBox.hidden = true;
-  qrWrap.hidden = true;
+  resetResult();
   setStatus("");
 
   if (!url) {
@@ -36,19 +45,26 @@ async function shortenUrl() {
     return;
   }
 
-  try {
-    const parsedUrl = new URL(url);
+  let parsedUrl;
 
-    if (!["http:", "https:"].includes(parsedUrl.protocol)) {
-      setStatus("Only HTTP and HTTPS URLs are allowed.");
-      return;
-    }
+  try {
+    parsedUrl = new URL(url);
   } catch {
-    setStatus("Please enter a valid URL, including https://");
+    setStatus("Enter a valid URL starting with https:// or http://");
+    longUrlInput.focus();
     return;
   }
 
-  if (alias && !validAlias(alias)) {
+  if (
+    !["http:", "https:"].includes(parsedUrl.protocol) ||
+    parsedUrl.username ||
+    parsedUrl.password
+  ) {
+    setStatus("Only valid HTTP and HTTPS URLs are allowed.");
+    return;
+  }
+
+  if (alias && !isValidAlias(alias)) {
     setStatus(
       "Alias mein sirf letters, numbers, hyphen (-) aur underscore (_) use karo."
     );
@@ -65,37 +81,66 @@ async function shortenUrl() {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({
-        url,
-        alias
-      })
+      body: JSON.stringify({ url: parsedUrl.href, alias })
     });
 
-    const data = await response.json().catch(() => ({}));
+    const data = await response.json().catch(() => null);
 
     if (!response.ok) {
-      throw new Error(data.error || "Could not shorten this URL.");
+      throw new Error(
+        data && data.error
+          ? data.error
+          : `Server error (${response.status}). Please try again.`
+      );
     }
 
-    if (!data.shorturl) {
-      throw new Error("The server did not return a shortened URL.");
+    if (!data || typeof data.shorturl !== "string") {
+      throw new Error(
+        "Server response mein shorturl nahi mila. Cloudflare Worker check karo."
+      );
     }
 
-    shortLink.href = data.shorturl;
-    shortLink.textContent = data.shorturl;
+    let generatedUrl;
+
+    try {
+      generatedUrl = new URL(data.shorturl);
+    } catch {
+      throw new Error("Server ne invalid short URL return kiya.");
+    }
+
+    if (!["http:", "https:"].includes(generatedUrl.protocol)) {
+      throw new Error("Server ne invalid short URL return kiya.");
+    }
+
+    // Show the real URL returned by the Worker.
+    shortLink.href = generatedUrl.href;
+    shortLink.textContent = generatedUrl.href;
     resultBox.hidden = false;
 
     if (qrOption.checked) {
       qrImage.src =
         "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" +
-        encodeURIComponent(data.shorturl);
+        encodeURIComponent(generatedUrl.href);
 
       qrWrap.hidden = false;
     }
 
     setStatus("Your short link is ready!");
+
+    resultBox.scrollIntoView({
+      behavior: "smooth",
+      block: "nearest"
+    });
   } catch (error) {
-    setStatus(error.message || "Something went wrong. Please try again.");
+    console.error("Link-Pulse error:", error);
+
+    if (error instanceof TypeError) {
+      setStatus(
+        "Server se connect nahi ho pa raha. Worker URL, CORS aur internet check karo."
+      );
+    } else {
+      setStatus(error.message || "Something went wrong. Please try again.");
+    }
   } finally {
     shortenBtn.disabled = false;
     shortenBtn.textContent = "Shorten URL";
@@ -112,22 +157,47 @@ customAliasInput.addEventListener("keydown", (event) => {
   if (event.key === "Enter") shortenUrl();
 });
 
+qrOption.addEventListener("change", () => {
+  if (!qrOption.checked) {
+    qrWrap.hidden = true;
+    return;
+  }
+
+  if (shortLink.href && shortLink.textContent) {
+    qrImage.src =
+      "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" +
+      encodeURIComponent(shortLink.href);
+
+    qrWrap.hidden = false;
+  }
+});
+
 copyBtn.addEventListener("click", async () => {
   const value = shortLink.href;
+
+  if (!value || !shortLink.textContent) {
+    setStatus("Pehle short URL generate karo.");
+    return;
+  }
 
   try {
     await navigator.clipboard.writeText(value);
     copyBtn.textContent = "Copied!";
+    setStatus("Short link copied!");
 
     setTimeout(() => {
       copyBtn.textContent = "Copy link";
     }, 1600);
   } catch {
-    setStatus("Copy nahi ho paya. Link ko manually select karke copy karo.");
+    setStatus(
+      "Copy nahi ho paya. Short URL ko manually select karke copy karo."
+    );
   }
 });
 
 openLinkBtn.addEventListener("click", () => {
-  window.open(shortLink.href, "_blank", "noopener,noreferrer");
+  if (shortLink.href && shortLink.textContent) {
+    window.open(shortLink.href, "_blank", "noopener,noreferrer");
+  }
 });
-      
+            
