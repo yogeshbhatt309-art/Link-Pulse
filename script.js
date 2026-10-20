@@ -1,183 +1,133 @@
 
-const input = document.getElementById('longUrl');
-const shortenBtn = document.getElementById('shortenBtn');
-const statusEl = document.getElementById('status');
-const result = document.getElementById('result');
-const shortLink = document.getElementById('shortLink');
-const copyBtn = document.getElementById('copyBtn');
-const qrOption = document.getElementById('qrOption');
-const qrWrap = document.getElementById('qrWrap');
-const qrImage = document.getElementById('qrImage');
-
 const API_ENDPOINT =
-  'https://linkpulse-api.yogeshbhatt309.workers.dev/api/shorten';
+  "https://linkpulse-api.yogeshbhatt309.workers.dev/api/shorten";
 
-function showStatus(message, isError = true) {
-  statusEl.textContent = message;
-  statusEl.style.color = isError ? '#ffb4b4' : '#7de2bf';
+const longUrlInput = document.getElementById("longUrl");
+const customAliasInput = document.getElementById("customAlias");
+const shortenBtn = document.getElementById("shortenBtn");
+const qrOption = document.getElementById("qrOption");
+const statusBox = document.getElementById("status");
+const resultBox = document.getElementById("result");
+const shortLink = document.getElementById("shortLink");
+const copyBtn = document.getElementById("copyBtn");
+const openLinkBtn = document.getElementById("openLinkBtn");
+const qrWrap = document.getElementById("qrWrap");
+const qrImage = document.getElementById("qrImage");
+
+function setStatus(message) {
+  statusBox.textContent = message;
 }
 
-function validUrl(value) {
-  try {
-    const u = new URL(value);
-    return (
-      (u.protocol === 'http:' || u.protocol === 'https:') &&
-      !u.username &&
-      !u.password
-    );
-  } catch {
-    return false;
-  }
+function validAlias(alias) {
+  return /^[a-zA-Z0-9_-]{1,30}$/.test(alias);
 }
 
-async function shorten() {
-  const url = input.value.trim();
+async function shortenUrl() {
+  const url = longUrlInput.value.trim();
+  const alias = customAliasInput.value.trim();
 
-  result.classList.add('hidden');
-  qrWrap.classList.add('hidden');
-  shortLink.removeAttribute('href');
+  resultBox.hidden = true;
+  qrWrap.hidden = true;
+  setStatus("");
 
   if (!url) {
-    showStatus('Please paste a URL first.');
+    setStatus("Please enter the URL you want to shorten.");
+    longUrlInput.focus();
     return;
   }
 
-  if (!validUrl(url)) {
-    showStatus(
-      'Enter a valid URL beginning with https:// or http://'
+  try {
+    const parsedUrl = new URL(url);
+
+    if (!["http:", "https:"].includes(parsedUrl.protocol)) {
+      setStatus("Only HTTP and HTTPS URLs are allowed.");
+      return;
+    }
+  } catch {
+    setStatus("Please enter a valid URL, including https://");
+    return;
+  }
+
+  if (alias && !validAlias(alias)) {
+    setStatus(
+      "Alias mein sirf letters, numbers, hyphen (-) aur underscore (_) use karo."
     );
+    customAliasInput.focus();
     return;
   }
 
   shortenBtn.disabled = true;
-  shortenBtn.textContent = 'Shortening…';
-
-  showStatus('Creating your short link. Please wait.', false);
+  shortenBtn.textContent = "Creating...";
 
   try {
     const response = await fetch(API_ENDPOINT, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json"
       },
-      body: JSON.stringify({ url })
+      body: JSON.stringify({
+        url,
+        alias
+      })
     });
 
-    let data;
-
-    try {
-      data = await response.json();
-    } catch {
-      throw new Error(
-        'Backend returned an invalid response. Check your Worker code.'
-      );
-    }
+    const data = await response.json().catch(() => ({}));
 
     if (!response.ok) {
-      throw new Error(
-        data.error || `Server error: ${response.status}`
-      );
+      throw new Error(data.error || "Could not shorten this URL.");
     }
 
     if (!data.shorturl) {
-      throw new Error(
-        data.error || 'The backend did not return a short URL.'
-      );
+      throw new Error("The server did not return a shortened URL.");
     }
 
     shortLink.href = data.shorturl;
     shortLink.textContent = data.shorturl;
-
-    result.classList.remove('hidden');
+    resultBox.hidden = false;
 
     if (qrOption.checked) {
       qrImage.src =
-        'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=' +
+        "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" +
         encodeURIComponent(data.shorturl);
 
-      qrWrap.classList.remove('hidden');
+      qrWrap.hidden = false;
     }
 
-    showStatus('Your short link is ready!', false);
-
-  } catch (err) {
-    console.error('URL shortening error:', err);
-
-    if (err instanceof TypeError) {
-      showStatus(
-        'Cannot connect to the backend. Check the Worker URL, CORS settings and deployment.'
-      );
-    } else {
-      showStatus(
-        err.message || 'Could not create your short link. Please try again.'
-      );
-    }
-
+    setStatus("Your short link is ready!");
+  } catch (error) {
+    setStatus(error.message || "Something went wrong. Please try again.");
   } finally {
     shortenBtn.disabled = false;
-    shortenBtn.innerHTML = 'Shorten link <span>→</span>';
+    shortenBtn.textContent = "Shorten URL";
   }
 }
 
-shortenBtn.addEventListener('click', shorten);
+shortenBtn.addEventListener("click", shortenUrl);
 
-input.addEventListener('keydown', event => {
-  if (event.key === 'Enter') {
-    shorten();
-  }
+longUrlInput.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") shortenUrl();
 });
 
-qrOption.addEventListener('change', () => {
-  if (!qrOption.checked) {
-    qrWrap.classList.add('hidden');
-    return;
-  }
-
-  if (
-    !result.classList.contains('hidden') &&
-    shortLink.href
-  ) {
-    qrImage.src =
-      'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=' +
-      encodeURIComponent(shortLink.href);
-
-    qrWrap.classList.remove('hidden');
-  }
+customAliasInput.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") shortenUrl();
 });
 
-copyBtn.addEventListener('click', async () => {
-  if (!shortLink.href) return;
+copyBtn.addEventListener("click", async () => {
+  const value = shortLink.href;
 
   try {
-    await navigator.clipboard.writeText(shortLink.href);
-
-    copyBtn.textContent = 'Copied ✓';
+    await navigator.clipboard.writeText(value);
+    copyBtn.textContent = "Copied!";
 
     setTimeout(() => {
-      copyBtn.textContent = 'Copy link';
-    }, 1500);
-
+      copyBtn.textContent = "Copy link";
+    }, 1600);
   } catch {
-    const range = document.createRange();
-    range.selectNodeContents(shortLink);
-
-    const selection = window.getSelection();
-    selection.removeAllRanges();
-    selection.addRange(range);
-
-    showStatus(
-      'Select the short link and copy it manually.',
-      false
-    );
+    setStatus("Copy nahi ho paya. Link ko manually select karke copy karo.");
   }
 });
 
-document.getElementById('menuBtn').addEventListener('click', () => {
-  document.querySelector('.nav-links').classList.toggle('open');
+openLinkBtn.addEventListener("click", () => {
+  window.open(shortLink.href, "_blank", "noopener,noreferrer");
 });
-
-document.querySelectorAll('.nav-links a').forEach(link => {
-  link.addEventListener('click', () => {
-    document.querySelector('.nav-links').classList.remove('open');
-  });
-});
+      
