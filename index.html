@@ -1,82 +1,416 @@
-<!doctype html>
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#080d1c" />
-  <title>LinkNova — Smart Link Shortener</title>
-  <meta name="description" content="Turn long links into short, shareable URLs with LinkNova." />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css" />
+  <meta name="theme-color" content="#101426" />
+  <title>Link-Pulse | URL Shortener</title>
+  <meta name="description" content="Shorten long URLs with Link-Pulse. Create a custom link alias and QR code for your links." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Inter", sans-serif;
+      color: #f5f7ff;
+      background:
+        radial-gradient(circle at top left, #29235c 0, transparent 38%),
+        radial-gradient(circle at bottom right, #123d58 0, transparent 35%),
+        #101426;
+    }
+
+    .container {
+      width: min(100% - 32px, 760px);
+      margin: 0 auto;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 26px 0;
+    }
+
+    .logo {
+      color: #fff;
+      font-size: 23px;
+      font-weight: 800;
+      letter-spacing: -1px;
+    }
+
+    .logo span {
+      color: #8c83ff;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 55px 0 28px;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 8px 13px;
+      border: 1px solid #ffffff20;
+      border-radius: 30px;
+      color: #c7c1ff;
+      background: #ffffff08;
+      font-size: 12px;
+    }
+
+    h1 {
+      margin: 20px 0 12px;
+      font-size: clamp(34px, 7vw, 55px);
+      line-height: 1.12;
+      letter-spacing: -2px;
+    }
+
+    h1 span {
+      color: #9a91ff;
+    }
+
+    .subtitle {
+      max-width: 530px;
+      margin: 0 auto;
+      color: #b8bfd5;
+      line-height: 1.7;
+      font-size: 15px;
+    }
+
+    .shortener {
+      margin: 20px auto 50px;
+      padding: 25px;
+      border: 1px solid #ffffff20;
+      border-radius: 22px;
+      background: #ffffff0c;
+      box-shadow: 0 24px 80px #00000025;
+      backdrop-filter: blur(18px);
+    }
+
+    label {
+      display: block;
+      margin-bottom: 9px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #e4e7f6;
+    }
+
+    input[type="url"],
+    input[type="text"] {
+      width: 100%;
+      min-width: 0;
+      padding: 15px;
+      border: 1px solid #ffffff20;
+      border-radius: 11px;
+      outline: none;
+      background: #101426aa;
+      color: white;
+      font: inherit;
+      font-size: 14px;
+    }
+
+    input:focus {
+      border-color: #9288ff;
+      box-shadow: 0 0 0 3px #9288ff20;
+    }
+
+    input::placeholder {
+      color: #858da8;
+    }
+
+    .url-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .url-row input {
+      flex: 1;
+    }
+
+    button {
+      border: 0;
+      border-radius: 11px;
+      padding: 14px 19px;
+      background: #8175ff;
+      color: white;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    button:hover {
+      background: #978eff;
+      transform: translateY(-1px);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: wait;
+      transform: none;
+    }
+
+    /* Custom alias field: URL box ke neeche, options ke upar */
+    .alias-field {
+      margin-top: 19px;
+    }
+
+    .alias-help {
+      display: block;
+      margin-top: 8px;
+      color: #aeb6cf;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .options {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin-top: 19px;
+      color: #d6daea;
+      font-size: 13px;
+    }
+
+    .options input {
+      accent-color: #9288ff;
+      width: 16px;
+      height: 16px;
+    }
+
+    #status {
+      min-height: 20px;
+      margin-top: 16px;
+      color: #c4c9dc;
+      font-size: 13px;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    #result {
+      margin-top: 15px;
+      padding: 17px;
+      border: 1px solid #ffffff20;
+      border-radius: 13px;
+      background: #0b1020aa;
+    }
+
+    #result[hidden],
+    #qrWrap[hidden] {
+      display: none;
+    }
+
+    .result-label {
+      margin-bottom: 9px;
+      color: #b8bfd5;
+      font-size: 12px;
+    }
+
+    #shortLink {
+      display: block;
+      margin-bottom: 13px;
+      color: #aaa2ff;
+      overflow-wrap: anywhere;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    #shortLink:hover {
+      text-decoration: underline;
+    }
+
+    .result-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .secondary-btn {
+      border: 1px solid #ffffff25;
+      background: #ffffff10;
+    }
+
+    #qrWrap {
+      margin-top: 18px;
+      text-align: center;
+    }
+
+    #qrImage {
+      display: block;
+      width: 180px;
+      height: 180px;
+      max-width: 100%;
+      margin: 12px auto 0;
+      padding: 8px;
+      border-radius: 12px;
+      background: white;
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 50px;
+    }
+
+    .feature {
+      padding: 18px 14px;
+      border: 1px solid #ffffff15;
+      border-radius: 15px;
+      background: #ffffff08;
+    }
+
+    .feature strong {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 14px;
+    }
+
+    .feature p {
+      margin: 0;
+      color: #b8bfd5;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    footer {
+      padding: 24px 0;
+      border-top: 1px solid #ffffff15;
+      color: #aeb6cf;
+      text-align: center;
+      font-size: 12px;
+    }
+
+    @media (max-width: 560px) {
+      .hero {
+        padding-top: 35px;
+      }
+
+      .shortener {
+        padding: 18px;
+      }
+
+      .url-row {
+        flex-direction: column;
+      }
+
+      .url-row button {
+        width: 100%;
+      }
+
+      .features {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
+
 <body>
-  <div class="ambient ambient-a"></div><div class="ambient ambient-b"></div>
-  <header class="nav wrap">
-    <a class="brand" href="#"><span class="brand-mark">↗</span><span>link<span class="brand-accent">nova</span></span></a>
-    <nav class="nav-links"><a href="#features">Platform</a><a href="#solutions">Solutions</a><a href="#plans">Plans</a></nav>
-    <div class="nav-actions"><a class="signin" href="#shortener">Sign in</a><a class="btn btn-small" href="#shortener">Start free <span>↗</span></a><button class="menu-btn" id="menuBtn" aria-label="Open menu">☰</button></div>
-  </header>
+  <div class="container">
+    <header>
+      <div class="logo">Link<span>Pulse</span></div>
+    </header>
 
-  <main>
-    <section class="hero wrap">
-      <div class="eyebrow"><span class="pulse"></span> SMART LINKS FOR A FASTER WEB</div>
-      <h1>Long links.<br><span class="gradient-text">Limitless possibilities.</span></h1>
-      <p class="hero-copy">Shorten, share, and understand every click. One simple link can take your ideas further.</p>
-      <div class="shortener glass" id="shortener">
-        <label class="field-label" for="longUrl">Paste your long URL</label>
-        <div class="url-row"><span class="link-icon">↗</span><input id="longUrl" type="url" placeholder="https://example.com/your/very/long/link" autocomplete="url"><button class="btn" id="shortenBtn">Shorten link <span>→</span></button></div>
+    <main>
+      <section class="hero">
+        <span class="tag">SIMPLE · FAST · FREE</span>
+        <h1>Make your links<br /><span>shorter & smarter.</span></h1>
+        <p class="subtitle">
+          Turn long URLs into short, shareable links. Choose your own custom alias
+          or let Link-Pulse generate one for you.
+        </p>
+      </section>
+
+      <section class="shortener" id="shortener">
+        <label for="longUrl">Paste your long URL</label>
+
+        <div class="url-row">
+          <input
+            type="url"
+            id="longUrl"
+            placeholder="https://example.com/your-long-link"
+            autocomplete="url"
+            required
+          />
+          <button type="button" id="shortenBtn">Shorten URL</button>
+        </div>
+
+        <!-- Custom Alias yahan sahi jagah par hai -->
+        <div class="alias-field">
+          <label for="customAlias">Custom Alias (optional)</label>
+          <input
+            type="text"
+            id="customAlias"
+            maxlength="30"
+            placeholder="e.g. my-project"
+            autocomplete="off"
+            spellcheck="false"
+            aria-describedby="aliasHelp"
+          />
+          <small class="alias-help" id="aliasHelp">
+            Apna naam likho. Letters, numbers, hyphen (-) aur underscore (_)
+            allowed hain. Khali chhodoge toh random alias banega.
+          </small>
+        </div>
+
         <div class="options">
-          <label class="option"><input type="checkbox" id="qrOption"><span class="fake-check">✓</span> Generate QR code</label>
-          <span class="secure-note"><span>⌑</span> Free to try · No account needed</span>
+          <input type="checkbox" id="qrOption" />
+          <label for="qrOption" style="margin: 0;">Generate QR code</label>
         </div>
-        <p id="status" class="status" role="status"></p>
-        <div id="result" class="result hidden">
-          <div class="result-main"><div><small>Your short link</small><a id="shortLink" href="#" target="_blank" rel="noopener noreferrer"></a></div><button class="copy-btn" id="copyBtn">Copy link</button></div>
-          <div id="qrWrap" class="qr-wrap hidden"><img id="qrImage" alt="QR code for your short link"><span>Scan to open your link</span></div>
+
+        <div id="status" role="status" aria-live="polite"></div>
+
+        <div id="result" hidden>
+          <div class="result-label">Your shortened link</div>
+          <a id="shortLink" href="#" target="_blank" rel="noopener noreferrer"></a>
+
+          <div class="result-actions">
+            <button type="button" id="copyBtn">Copy link</button>
+            <button type="button" id="openLinkBtn" class="secondary-btn">
+              Open link
+            </button>
+          </div>
+
+          <div id="qrWrap" hidden>
+            <div class="result-label" style="margin-top: 18px;">
+              Scan your QR code
+            </div>
+            <img id="qrImage" alt="QR code for your shortened link" />
+          </div>
         </div>
-      </div>
-      <div class="trust-row"><span>✦ Simple by design</span><span>⌁ Share anywhere</span><span>◈ Built for creators</span></div>
-      <div class="hero-visual" aria-label="Link analytics preview">
-        <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
-        <div class="floating-card mini-card"><span class="mini-icon">↗</span><div><b>Link created</b><small>Just now · Ready to share</small></div><span class="check">✓</span></div>
-        <div class="analytics-card"><div class="card-top"><div><small>LINK PERFORMANCE</small><h3>Your links, at a glance</h3></div><span class="live-pill"><i></i> LIVE PREVIEW</span></div><div class="chart"><div class="chart-grid"></div><svg viewBox="0 0 520 125" preserveAspectRatio="none" role="img" aria-label="Decorative rising analytics chart"><defs><linearGradient id="area" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#4e7bff" stop-opacity=".34"/><stop offset="100%" stop-color="#4e7bff" stop-opacity="0"/></linearGradient></defs><path d="M0 105 C35 98 45 75 80 83 S130 90 160 63 S205 82 240 52 S285 64 320 36 S365 59 395 28 S450 42 480 12 L520 20 L520 125 L0 125Z" fill="url(#area)"/><path d="M0 105 C35 98 45 75 80 83 S130 90 160 63 S205 82 240 52 S285 64 320 36 S365 59 395 28 S450 42 480 12 L520 20" fill="none" stroke="#7295ff" stroke-width="3" stroke-linecap="round"/></svg></div><div class="chart-stats"><div><small>Links created</small><b>Easy to share</b></div><div><small>QR ready</small><b>Scan & go</b></div><div><small>Works anywhere</small><b>One short URL</b></div></div></div>
-      </div>
-    </section>
+      </section>
 
-    <section class="stats wrap"><div><b>01</b><span>Paste a link</span></div><div><b>02</b><span>Shorten in seconds</span></div><div><b>03</b><span>Share it anywhere</span></div><div><b>04</b><span>Make it memorable</span></div></section>
+      <section class="features">
+        <div class="feature">
+          <strong>Custom aliases</strong>
+          <p>Create a short link using a name you choose.</p>
+        </div>
+        <div class="feature">
+          <strong>Quick sharing</strong>
+          <p>Copy your shortened URL and share it anywhere.</p>
+        </div>
+        <div class="feature">
+          <strong>QR codes</strong>
+          <p>Generate a QR code for easy scanning.</p>
+        </div>
+      </section>
+    </main>
 
-    <section class="section wrap" id="features"><div class="section-heading"><span class="eyebrow">BUILT FOR YOUR NEXT CLICK</span><h2>Small links. <span class="gradient-text">Big impact.</span></h2><p>Everything you need to make your links cleaner, easier to share, and more useful.</p></div>
-      <div class="feature-grid">
-        <article class="feature-card"><div class="feature-icon blue">↗</div><h3>Shorten in a flash</h3><p>Turn long, messy URLs into compact links that are easy to share anywhere.</p><span class="feature-tag">ONE-CLICK FLOW</span></article>
-        <article class="feature-card"><div class="feature-icon purple">⌗</div><h3>QR codes included</h3><p>Create a scannable QR code for posters, presentations, and real-world sharing.</p><span class="feature-tag">SCAN & SHARE</span></article>
-        <article class="feature-card"><div class="feature-icon cyan">◎</div><h3>Made for every screen</h3><p>A responsive experience that feels right on your laptop, tablet, or phone.</p><span class="feature-tag">RESPONSIVE DESIGN</span></article>
-        <article class="feature-card"><div class="feature-icon pink">◇</div><h3>Simple by default</h3><p>No clutter or complicated setup. Just paste a URL and get moving.</p><span class="feature-tag">NO-FUSS WORKFLOW</span></article>
-      </div>
-    </section>
+    <footer>
+      Link-Pulse · Simple links, made easier.
+    </footer>
+  </div>
 
-    <section class="solutions" id="solutions"><div class="wrap solution-inner"><div class="solution-copy"><span class="eyebrow">YOUR LINKS, YOUR WAY</span><h2>Give every link<br>room to <span class="gradient-text">travel.</span></h2><p>From social bios to school projects and campaigns, LinkNova helps your URLs look neat wherever you share them.</p><ul><li><span>✓</span> Clean, shareable short links</li><li><span>✓</span> Optional QR code preview</li><li><span>✓</span> Copy-ready results in seconds</li></ul><a class="btn" href="#shortener">Try it for free <span>→</span></a></div><div class="link-preview"><div class="preview-head"><span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span><span class="preview-label">LINKNOVA / PREVIEW</span></div><div class="preview-content"><div class="preview-logo">↗</div><small>YOUR NEXT SHAREABLE LINK</small><h3>One link. Less clutter.</h3><div class="fake-link"><span>linknova.example/your-link</span><span>⧉</span></div><div class="preview-footer"><span>✦ Clean and simple</span><span>↗ Ready to share</span></div></div></div></div></section>
-
-    <section class="section wrap" id="plans"><div class="section-heading"><span class="eyebrow">STRAIGHTFORWARD START</span><h2>Start simple. <span class="gradient-text">Grow from there.</span></h2><p>Use the core link-shortening experience for free. Add your own backend when you're ready for more.</p></div><div class="pricing-grid"><article class="price-card"><span class="price-label">STARTER</span><h3>Free</h3><p class="price-desc">For personal links and projects.</p><div class="price">$0 <small>/ forever</small></div><ul><li>✓ URL shortening</li><li>✓ Copy short links</li><li>✓ QR code option</li><li>✓ Mobile-friendly website</li></ul><a href="#shortener" class="btn btn-outline">Get started <span>→</span></a></article><article class="price-card featured"><span class="popular">FOR BUILDERS</span><span class="price-label">NEXT STEP</span><h3>LinkNova Plus</h3><p class="price-desc">For your own production platform.</p><div class="price">Build <small>your way</small></div><ul><li>✓ Connect a database</li><li>✓ Custom domain support</li><li>✓ Link management dashboard</li><li>✓ Analytics with a backend</li></ul><a href="#shortener" class="btn">Build your version <span>→</span></a></article></div><p class="pricing-note">Note: production features such as accounts, saved links, password gates, expiry rules, and click analytics require a backend and database.</p></section>
-
-    <section class="cta wrap"><div class="cta-glow"></div><span class="eyebrow">YOUR NEXT LINK STARTS HERE</span><h2>Ready to make it <span class="gradient-text">short?</span></h2><p>Paste a link above and give it a cleaner way to travel.</p><a href="#shortener" class="btn">Shorten a link <span>↑</span></a></section>
-  </main>
-  <footer class="footer"><div class="wrap footer-inner"><a class="brand" href="#"><span class="brand-mark">↗</span><span>link<span class="brand-accent">nova</span></span></a><p>Make every link easier to share.</p><span>© 2026 LinkNova · Independent demo project</span></div></footer>
   <script src="script.js"></script>
-  
-<div id="aliasAddon" style="margin: 12px 0;">
-  <label for="customAlias">Custom alias (optional)</label>
-  <input
-    id="customAlias"
-    type="text"
-    maxlength="30"
-    placeholder="Apna koi bhi naam likho"
-    style="display:block;width:100%;box-sizing:border-box;padding:12px;margin-top:6px;"
-  />
-  <small>Letters, numbers, hyphen (-) aur underscore (_) use karo.</small>
-</div>
-  
 </body>
+  </html>
   
-</html>
