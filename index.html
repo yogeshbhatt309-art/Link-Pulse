@@ -2,20 +2,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#101426" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#101426">
+  <meta name="description" content="Shorten long URLs with Link-Pulse. Create custom short links and QR codes.">
   <title>Link-Pulse | URL Shortener</title>
-  <meta name="description" content="Shorten long URLs with Link-Pulse. Create a custom link alias and QR code for your links." />
 
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -36,7 +34,6 @@
     header {
       display: flex;
       align-items: center;
-      justify-content: space-between;
       padding: 26px 0;
     }
 
@@ -47,9 +44,7 @@
       letter-spacing: -1px;
     }
 
-    .logo span {
-      color: #8c83ff;
-    }
+    .logo span { color: #8c83ff; }
 
     .hero {
       text-align: center;
@@ -73,9 +68,7 @@
       letter-spacing: -2px;
     }
 
-    h1 span {
-      color: #9a91ff;
-    }
+    h1 span { color: #9a91ff; }
 
     .subtitle {
       max-width: 530px;
@@ -122,18 +115,14 @@
       box-shadow: 0 0 0 3px #9288ff20;
     }
 
-    input::placeholder {
-      color: #858da8;
-    }
+    input::placeholder { color: #858da8; }
 
     .url-row {
       display: flex;
       gap: 10px;
     }
 
-    .url-row input {
-      flex: 1;
-    }
+    .url-row input { flex: 1; }
 
     button {
       border: 0;
@@ -145,7 +134,7 @@
       font-size: 14px;
       font-weight: 700;
       cursor: pointer;
-      transition: 0.2s ease;
+      transition: background 0.2s ease, transform 0.2s ease;
     }
 
     button:hover {
@@ -159,10 +148,7 @@
       transform: none;
     }
 
-    /* Custom alias field: URL box ke neeche, options ke upar */
-    .alias-field {
-      margin-top: 19px;
-    }
+    .alias-field { margin-top: 19px; }
 
     .alias-help {
       display: block;
@@ -187,12 +173,14 @@
       height: 16px;
     }
 
+    .options label { margin: 0; }
+
     #status {
       min-height: 20px;
       margin-top: 16px;
       color: #c4c9dc;
       font-size: 13px;
-      line-height: 1.5;
+      line-height: 1.6;
       overflow-wrap: anywhere;
     }
 
@@ -206,7 +194,7 @@
 
     #result[hidden],
     #qrWrap[hidden] {
-      display: none;
+      display: none !important;
     }
 
     .result-label {
@@ -220,13 +208,13 @@
       margin-bottom: 13px;
       color: #aaa2ff;
       overflow-wrap: anywhere;
+      word-break: break-word;
       text-decoration: none;
       font-size: 14px;
+      line-height: 1.6;
     }
 
-    #shortLink:hover {
-      text-decoration: underline;
-    }
+    #shortLink:hover { text-decoration: underline; }
 
     .result-actions {
       display: flex;
@@ -291,25 +279,11 @@
     }
 
     @media (max-width: 560px) {
-      .hero {
-        padding-top: 35px;
-      }
-
-      .shortener {
-        padding: 18px;
-      }
-
-      .url-row {
-        flex-direction: column;
-      }
-
-      .url-row button {
-        width: 100%;
-      }
-
-      .features {
-        grid-template-columns: 1fr;
-      }
+      .hero { padding-top: 35px; }
+      .shortener { padding: 18px; }
+      .url-row { flex-direction: column; }
+      .url-row button { width: 100%; }
+      .features { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -323,10 +297,10 @@
     <main>
       <section class="hero">
         <span class="tag">SIMPLE · FAST · FREE</span>
-        <h1>Make your links<br /><span>shorter & smarter.</span></h1>
+        <h1>Make your links<br><span>shorter &amp; smarter.</span></h1>
         <p class="subtitle">
-          Turn long URLs into short, shareable links. Choose your own custom alias
-          or let Link-Pulse generate one for you.
+          Turn long URLs into short, shareable links. Choose your own custom
+          alias or let Link-Pulse generate one for you.
         </p>
       </section>
 
@@ -340,11 +314,10 @@
             placeholder="https://example.com/your-long-link"
             autocomplete="url"
             required
-          />
+          >
           <button type="button" id="shortenBtn">Shorten URL</button>
         </div>
 
-        <!-- Custom Alias yahan sahi jagah par hai -->
         <div class="alias-field">
           <label for="customAlias">Custom Alias (optional)</label>
           <input
@@ -355,16 +328,16 @@
             autocomplete="off"
             spellcheck="false"
             aria-describedby="aliasHelp"
-          />
+          >
           <small class="alias-help" id="aliasHelp">
-            Apna naam likho. Letters, numbers, hyphen (-) aur underscore (_)
-            allowed hain. Khali chhodoge toh random alias banega.
+            Letters, numbers, hyphen (-) aur underscore (_) allowed hain.
+            Khali chhodoge toh random alias generate hoga.
           </small>
         </div>
 
         <div class="options">
-          <input type="checkbox" id="qrOption" />
-          <label for="qrOption" style="margin: 0;">Generate QR code</label>
+          <input type="checkbox" id="qrOption">
+          <label for="qrOption">Generate QR code</label>
         </div>
 
         <div id="status" role="status" aria-live="polite"></div>
@@ -384,7 +357,7 @@
             <div class="result-label" style="margin-top: 18px;">
               Scan your QR code
             </div>
-            <img id="qrImage" alt="QR code for your shortened link" />
+            <img id="qrImage" alt="QR code for your shortened link">
           </div>
         </div>
       </section>
@@ -405,12 +378,9 @@
       </section>
     </main>
 
-    <footer>
-      Link-Pulse · Simple links, made easier.
-    </footer>
+    <footer>Link-Pulse · Simple links, made easier.</footer>
   </div>
 
-  <script src="script.js"></script>
+  <script src="script.js?v=3"></script>
 </body>
-  </html>
-  
+</html>
