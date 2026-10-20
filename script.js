@@ -29,7 +29,21 @@ async function shorten() {
   showStatus('Creating your short link. Please wait.', false);
   try {
     // Public endpoint from is.gd. Availability and browser CORS policy may vary.
-    const endpoint = 'https://is.gd/create.php?format=json&url=' + encodeURIComponent(url);
+    const endpoint = 'https://linkpulse-api.yogeshbhatt309.workers.dev/api/shorten';
+
+const response = await fetch(endpoint, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({ url })
+});
+
+const data = await response.json();
+
+if (!response.ok || !data.shorturl) {
+  throw new Error(data.error || 'Could not shorten URL');
+}
     const response = await fetch(endpoint);
     if (!response.ok) throw new Error('The shortening service did not respond.');
     const data = await response.json();
